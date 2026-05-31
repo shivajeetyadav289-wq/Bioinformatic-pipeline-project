@@ -1,0 +1,56 @@
+# conserved region analysis
+from Bio import SeqIO
+from Bio import AlignIO
+from collections import Counter
+
+# records = []
+
+# records.extend(list(SeqIO.parse("rv1515c.fasta","fasta")))
+# records.extend(list(SeqIO.parse("top10_homologs.fasta","fasta")))
+
+# SeqIO.write(records,"all_sequences.fasta","fasta")
+
+#perform conservation analysis
+
+# alignment = AlignIO.read("aligned.fasta","fasta")
+
+# alignment_length = alignment.get_alignment_length()
+
+# print("Alignment Length:", alignment_length)
+
+# for i in range(alignment_length):
+
+#     column = alignment[:,i]
+
+#     if len(set(column)) == 1:
+
+#         print("Conserved Position:",
+#               i+1,
+#               "Residue:",
+#               column[0])
+
+# #closest homologs
+
+alignment = AlignIO.read("aligned.fasta", "fasta")
+alignment_length = alignment.get_alignment_length()
+conserved = 0
+for i in range(alignment_length):
+
+    column = alignment[:, i]
+
+    counts = Counter(column)
+
+    most_common = counts.most_common(1)[0]
+
+    conservation = (most_common[1] / len(column)) * 100
+
+    if conservation >= 90:
+        conserved += 1
+
+print("Highly Conserved Positions:", conserved)
+
+print(
+    "Conservation Percentage:",
+    round((conserved/alignment_length)*100,2),
+    "%"
+)
