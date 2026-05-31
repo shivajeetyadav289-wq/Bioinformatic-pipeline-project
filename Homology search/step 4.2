@@ -1,0 +1,93 @@
+# step 4.2 Identification of closest homology search
+from Bio import SeqIO
+from Bio.Blast import NCBIWWW
+from Bio.Blast import NCBIXML
+from Bio import Entrez, SeqIO
+import pandas as pd
+
+#pharse the blast result
+result_handle = open("blast_results_rv1515c.xml")
+
+blast_record = NCBIXML.read(result_handle)
+
+# colosest Homology based on E-value and identity
+for alignment in blast_record.alignments[:10]:
+    print("Protein:", alignment.hit_def)
+
+    for hsp in alignment.hsps:
+        print("Score:", hsp.score)
+        print("E-value:", hsp.expect)
+        print("Identity:", hsp.identities)
+        print("-"*50)
+        break
+    
+# calculate percentage of identification
+for alignment in blast_record.alignments[:20]:
+
+    hsp = alignment.hsps[0]
+
+    percent_identity = (hsp.identities / hsp.align_length) * 100
+
+    print("Hit:", alignment.hit_def)
+    print("Identity (%):", round(percent_identity, 2))
+    print("E-value:", hsp.expect)
+    print()
+    
+# Filtering significant hits
+top_hits = []
+for alignment in blast_record.alignments:
+
+    hsp = alignment.hsps[0]
+
+    identity = (hsp.identities / hsp.align_length) * 100
+
+    if hsp.expect <= 1e-5 and identity >= 30:
+
+        top_hits.append({
+            "Protein": alignment.hit_def,
+            "Identity": round(identity, 2),
+            "Evalue": hsp.expect,
+            "Score": hsp.score
+        })
+
+print("Total nuber of hits count:", len(top_hits))
+        
+#sort the e value best first
+top_hits = sorted(top_hits, key=lambda x: x["Evalue"])
+
+#Print top 10 homology
+print("\nTOP 10 HOMOLOGS\n")
+
+for i, hit in enumerate(top_hits[:10], start=1):
+
+    print(f"Rank {i}")
+    print("Protein :", hit["Protein"])
+    print("Identity:", hit["Identity"], "%")
+    print("E-value :", hit["Evalue"])
+    print("Score   :", hit["Score"])
+    print("-"*60)
+
+# save it into csv file
+
+df = pd.DataFrame(top_hits)
+df.to_csv("Top_Homologs.csv", index=False)
+print("Top homologs saved successfully.")
+
+
+# saving the top 10 homologus sequence into fasta file.
+Entrez.email = "shivajeetyadav289@gmail.com"
+
+accessions = []
+
+for alignment in blast_record.alignments[:10]:
+    accessions.append(alignment.accession)
+
+handle = Entrez.efetch(
+    db="protein",
+    id=accessions,
+    rettype="fasta",
+    retmode="text"
+)
+records = list(SeqIO.parse(handle, "fasta"))
+SeqIO.write(records, "top10_homologs.fasta", "fasta")
+print("Saved", len(records), "homologous sequences.")
