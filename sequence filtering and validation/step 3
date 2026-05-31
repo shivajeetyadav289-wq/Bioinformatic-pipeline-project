@@ -1,0 +1,130 @@
+# Step 3: Sequence Filtering and Validation
+
+from Bio import SeqIO
+
+# Read protein sequence
+record = SeqIO.read("rv1515c.fasta", "fasta")
+
+protein_seq = str(record.seq).upper()
+
+print("="*60)
+print("STEP 3: SEQUENCE FILTERING AND VALIDATION")
+print("="*60)
+
+# -------------------------------
+# 1. Sequence Length Check
+# -------------------------------
+
+seq_length = len(protein_seq)
+
+print("Protein ID:", record.id)
+print("Sequence Length:", seq_length, "amino acids")
+
+if seq_length < 50:
+    print("FAILED: Sequence too short")
+else:
+    print("PASSED: Sequence length acceptable")
+
+print("-"*60)
+
+# -------------------------------
+# 2. N-terminal Residue Check
+# -------------------------------
+
+N_terminal = protein_seq[0]
+
+print("N-terminal Residue:", N_terminal)
+
+if N_terminal == "M":
+    print("PASSED: Starts with Methionine (M)")
+else:
+    print("WARNING: Does not start with Methionine")
+
+print("-"*60)
+
+# -------------------------------
+# 3. C-terminal Residue Check
+# -------------------------------
+
+C_terminal = protein_seq[-1]
+
+print("C-terminal Residue:", C_terminal)
+
+print("-"*60)
+
+# -------------------------------
+# 4. Ambiguous Residue Check
+# -------------------------------
+
+X_count = protein_seq.count("X")
+B_count = protein_seq.count("B")
+Z_count = protein_seq.count("Z")
+J_count = protein_seq.count("J")
+
+print("X Count =", X_count)
+print("B Count =", B_count)
+print("Z Count =", Z_count)
+print("J Count =", J_count)
+
+total_ambiguous = X_count + B_count + Z_count + J_count
+
+if total_ambiguous == 0:
+    print("PASSED: No ambiguous residues")
+else:
+    print("FAILED: Ambiguous residues detected")
+
+print("-"*60)
+
+# -------------------------------
+# 5. Internal Stop Codon Check
+# -------------------------------
+
+internal_stop = protein_seq[:-1].count("*")
+
+print("Internal Stop Codons =", internal_stop)
+
+if internal_stop == 0:
+    print("PASSED: No internal stop codons")
+else:
+    print("FAILED: Internal stop codon present")
+
+print("-"*60)
+
+# -------------------------------
+# 6. Non-standard Amino Acid Check
+# -------------------------------
+
+VALID_AA = set("ACDEFGHIKLMNPQRSTVWY")
+
+invalid_residues = []
+
+for aa in protein_seq:
+    if aa not in VALID_AA and aa != "*":
+        invalid_residues.append(aa)
+
+if len(invalid_residues) == 0:
+    print("PASSED: Only standard amino acids found")
+else:
+    print("FAILED: Invalid residues found")
+    print(set(invalid_residues))
+
+print("-"*60)
+
+# -------------------------------
+# 7. Final Validation Result
+# -------------------------------
+
+if (seq_length >= 50 and
+    total_ambiguous == 0 and
+    internal_stop == 0 and
+    len(invalid_residues) == 0):
+
+    print("FINAL RESULT: HIGH QUALITY PROTEIN SEQUENCE")
+    print("Sequence Passed All Validation Checks")
+
+else:
+
+    print("FINAL RESULT: QUALITY ISSUES DETECTED")
+    print("Further Investigation Required")
+
+print("="*60) 
