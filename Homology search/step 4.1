@@ -1,0 +1,21 @@
+#Step 4:Homology Search
+# Similarity search
+from Bio import SeqIO
+from Bio.Blast import NCBIWWW
+from Bio.Blast import NCBIXML
+
+# Read protein sequence
+record = SeqIO.read("rv1515c.fasta", "fasta")
+
+# Run BLASTp against NCBI nr database
+result_handle = NCBIWWW.qblast(
+    program="blastp",
+    database="nr",
+    sequence=record.seq
+)
+
+# Save BLAST results as XML
+with open("blast_results_rv1515c.xml", "w") as out_file:
+    out_file.write(result_handle.read())
+
+print("BLAST search completed successfully.")
