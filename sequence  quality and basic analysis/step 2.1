@@ -1,0 +1,37 @@
+#To chek trhe quality of the Sequence:
+#1. Sequence length.
+#2. Low quality bases.
+#3. N-terminal and c- terminal residues
+#4. Internal stop codon
+from Bio import SeqIO
+
+record = SeqIO.read("rv1515c.fasta", "fasta")
+sequence = str(record.seq)
+
+print("="*50)
+print("SEQUENCE QUALITY ANALYSIS")
+print("="*50)
+
+# Sequence Length
+print("Sequence Length:", len(sequence))
+
+# N-terminal residue
+print("N-terminal Residue:", sequence[0])
+
+# C-terminal residue
+print("C-terminal Residue:", sequence[-1])
+
+# Ambiguous residues
+for residue in ["X", "B", "Z", "J"]:
+    print(residue, "Count =", sequence.count(residue))
+
+# Stop codons
+print("Total Stop Codons:", sequence.count("*"))
+
+# Internal stop codons
+if "*" in sequence[:-1]:
+    print("Internal Stop Codon Present")
+else:
+    print("No Internal Stop Codon Present")
+
+print("="*50)
