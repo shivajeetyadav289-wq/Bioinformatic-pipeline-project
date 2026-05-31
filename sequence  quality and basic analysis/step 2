@@ -1,0 +1,102 @@
+# Step 2: Sequence Quality analysis.
+# This include reading the sequence using the Biopython, clculation of each amino acid content.
+# It also include the amino acid sequence percentage for different type of amino acid content.
+
+from Bio import SeqIO
+
+# Read protein sequence from FASTA file
+record = SeqIO.read("rv1515c.fasta", "fasta")
+
+# Count each amino acid
+Alanine_count_A = record.seq.count("A")
+Cysteine_count_C = record.seq.count("C")
+Aspartate_count_D = record.seq.count("D")
+Glutamate_count_E = record.seq.count("E")
+Phenylalanine_count_F = record.seq.count("F")
+Glycine_count_G = record.seq.count("G")
+Histidine_count_H = record.seq.count("H")
+Isoleucine_count_I = record.seq.count("I")
+Lysine_count_K = record.seq.count("K")
+Leucine_count_L = record.seq.count("L")
+Methionine_count_M = record.seq.count("M")
+Asparagine_count_N = record.seq.count("N")
+Proline_count_P = record.seq.count("P")
+Glutamine_count_Q = record.seq.count("Q")
+Arginine_count_R = record.seq.count("R")
+Serine_count_S = record.seq.count("S")
+Threonine_count_T = record.seq.count("T")
+Valine_count_V = record.seq.count("V")
+Tryptophan_count_W = record.seq.count("W")
+Tyrosine_count_Y = record.seq.count("Y")
+
+# Check stop codon (*)
+StopCodon_count = record.seq.count("*")
+
+# Sequence length
+Sequence_length = len(record.seq)
+
+print("Protein ID :", record.id)
+print("Protein Description :", record.description)
+print("Sequence Length :", Sequence_length, "amino acids")
+print("="*50)
+
+# Print amino acid counts
+print("Alanine (A):", Alanine_count_A)
+print("Cysteine (C):", Cysteine_count_C)
+print("Aspartate (D):", Aspartate_count_D)
+print("Glutamate (E):", Glutamate_count_E)
+print("Phenylalanine (F):", Phenylalanine_count_F)
+print("Glycine (G):", Glycine_count_G)
+print("Histidine (H):", Histidine_count_H)
+print("Isoleucine (I):", Isoleucine_count_I)
+print("Lysine (K):", Lysine_count_K)
+print("Leucine (L):", Leucine_count_L)
+print("Methionine (M):", Methionine_count_M)
+print("Asparagine (N):", Asparagine_count_N)
+print("Proline (P):", Proline_count_P)
+print("Glutamine (Q):", Glutamine_count_Q)
+print("Arginine (R):", Arginine_count_R)
+print("Serine (S):", Serine_count_S)
+print("Threonine (T):", Threonine_count_T)
+print("Valine (V):", Valine_count_V)
+print("Tryptophan (W):", Tryptophan_count_W)
+print("Tyrosine (Y):", Tyrosine_count_Y)
+
+print("="*50)
+
+# Amino acid group percentages
+
+Hydrophobic = ((Glycine_count_G + Alanine_count_A +
+                Valine_count_V + Leucine_count_L +
+                Isoleucine_count_I + Methionine_count_M +
+                Phenylalanine_count_F + Tryptophan_count_W)
+               / Sequence_length) * 100
+
+Polar = ((Serine_count_S + Threonine_count_T +
+          Cysteine_count_C + Asparagine_count_N +
+          Glutamine_count_Q + Tyrosine_count_Y)
+         / Sequence_length) * 100
+
+Acidic = ((Aspartate_count_D + Glutamate_count_E)
+          / Sequence_length) * 100
+
+Basic = ((Lysine_count_K + Arginine_count_R +
+          Histidine_count_H)
+         / Sequence_length) * 100
+
+print("Hydrophobic amino acids (%) :", round(Hydrophobic, 2))
+print("Polar amino acids (%) :", round(Polar, 2))
+print("Acidic amino acids (%) :", round(Acidic, 2))
+print("Basic amino acids (%) :", round(Basic, 2))
+
+print("="*50)
+
+# Quality Check
+
+if StopCodon_count == 0:
+    print("Quality Check Passed")
+    print("No stop codon found in protein sequence.")
+else:
+    print("Warning: Stop codon found =", StopCodon_count)
+
+print("Sequence Quality Analysis Completed Successfully")
